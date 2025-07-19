@@ -1,0 +1,275 @@
+/* Terminal 1980s Retro Style */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Courier Prime', 'Courier New', 'Monaco', 'Lucida Console', monospace;
+    background: #000000;
+    color: #00ff00;
+    min-height: 100vh;
+    overflow-x: hidden;
+    line-height: 1.4;
+    font-size: 16px;
+}
+
+/* Terminal Container */
+.terminal {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.terminal-header {
+    margin-bottom: 20px;
+}
+
+.terminal-content {
+    flex: 1;
+}
+
+.terminal-footer {
+    margin-top: 20px;
+    opacity: 0.7;
+}
+
+/* Terminal Lines */
+.terminal-line {
+    margin: 2px 0;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+}
+
+/* Sections */
+.instructions-section,
+.stats-section,
+.chart-section,
+.input-section,
+.feedback-section {
+    margin-bottom: 15px;
+}
+
+/* Statistics */
+.stat-value {
+    color: #00ff00;
+    font-weight: 700;
+}
+
+/* Chart Container */
+.chart-container {
+    background: #000000;
+    border: 1px solid #00ff00;
+    margin: 10px 0;
+    padding: 10px;
+    position: relative;
+}
+
+#scatter-chart {
+    max-width: 100%;
+    height: auto;
+    background: #000000;
+}
+
+/* Terminal Input */
+.terminal-input {
+    background: #000000;
+    color: #00ff00;
+    border: none;
+    outline: none;
+    font-family: inherit;
+    font-size: inherit;
+    width: 120px;
+    padding: 0;
+    margin: 0 5px;
+    display: inline;
+    border-bottom: 1px solid #00ff00;
+}
+
+.terminal-input::placeholder {
+    color: #00ff00;
+    opacity: 0.7;
+}
+
+.terminal-input:focus {
+    border-bottom: 1px solid #00ff00;
+}
+
+/* Cursor Effects */
+.cursor {
+    color: #00ff00;
+    opacity: 0.8;
+}
+
+.cursor-blink {
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+/* Terminal Buttons */
+.terminal-button {
+    background: #000000;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    font-family: inherit;
+    font-size: inherit;
+    padding: 2px 4px;
+    margin: 2px 5px 2px 0;
+    cursor: pointer;
+    display: inline-block;
+    letter-spacing: 0.5px;
+}
+
+.terminal-button:hover {
+    background: #00ff00;
+    color: #000000;
+}
+
+.terminal-button:active {
+    background: #00ff00;
+    color: #000000;
+}
+
+.terminal-button:disabled {
+    color: #006600;
+    border-color: #006600;
+    cursor: not-allowed;
+}
+
+.terminal-button:disabled:hover {
+    background: #000000;
+    color: #006600;
+}
+
+/* Feedback Styling */
+.feedback {
+    color: #00ff00;
+    min-height: 20px;
+    margin: 5px 0;
+}
+
+.feedback.excellent {
+    color: #00ff00;
+}
+
+.feedback.good {
+    color: #00ff00;
+}
+
+.feedback.okay {
+    color: #ffff00;
+}
+
+.feedback.poor {
+    color: #ff8800;
+}
+
+.feedback.terrible {
+    color: #ff0000;
+}
+
+.feedback.error {
+    color: #ff0000;
+}
+
+.feedback.game-over {
+    color: #ff0000;
+    font-weight: 700;
+}
+
+/* Chart.js Terminal Theme Override */
+.chart-container canvas {
+    background: #000000 !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    body {
+        font-size: 14px;
+        padding: 0;
+    }
+    
+    .terminal {
+        padding: 15px;
+        margin: 0;
+        max-width: 100%;
+    }
+    
+    .terminal-input {
+        width: 100px;
+    }
+    
+    .terminal-button {
+        margin: 2px 0;
+        display: block;
+        width: fit-content;
+    }
+    
+    .chart-container {
+        overflow-x: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        font-size: 12px;
+    }
+    
+    .terminal {
+        padding: 10px;
+    }
+    
+    .terminal-input {
+        width: 80px;
+        font-size: 12px;
+    }
+    
+    .terminal-line {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+}
+
+/* Terminal Text Animation (Optional Enhancement) */
+.terminal-line.typing {
+    overflow: hidden;
+    border-right: 2px solid #00ff00;
+    white-space: nowrap;
+    animation: typing 2s steps(40, end), blink-caret 0.75s step-end infinite;
+}
+
+@keyframes typing {
+    from { width: 0; }
+    to { width: 100%; }
+}
+
+@keyframes blink-caret {
+    from, to { border-color: transparent; }
+    50% { border-color: #00ff00; }
+}
+
+/* Hide scrollbars but keep functionality */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #000000;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #00ff00;
+    border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #00cc00;
+}

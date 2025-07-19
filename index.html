@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terminal // Guess the Beta</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Terminal 1980s Retro Style - Orange Theme */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier Prime', 'Courier New', 'Monaco', 'Lucida Console', monospace;
+            background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+            color: #ff6600;
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.4;
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        /* Main Container */
+        .terminal-container {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            grid-template-rows: auto 1fr auto;
+            gap: 15px;
+            padding: 15px;
+            min-height: 100vh;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .terminal-header {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .main-title {
+            font-size: 48px;
+            font-weight: 700;
+            color: #ffaa00;
+            text-shadow: 0 0 20px #ff6600;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .sub-title {
+            font-size: 16px;
+            color: #ff6600;
+            margin-bottom: 5px;
+        }
+
+        .version {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #666;
+            font-size: 12px;
+        }
+
+        /* Terminal Sections */
+        .terminal-section {
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #ff6600;
+            border-radius: 0;
+            padding: 15px;
+            position: relative;
+        }
+
+        .section-title {
+            position: absolute;
+            top: -12px;
+            left: 15px;
+            background: #0f0f0f;
+            color: #ff6600;
+            padding: 0 10px;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* Chart Section */
+        .chart-section {
+            grid-column: 1;
+            grid-row: 2;
+        }
+
+        .chart-container {
+            background: #000000;
+            border: 1px solid #333;
+            margin: 5px 0;
+            padding: 15px;
+            height: 400px;
+            position: relative;
+        }
+
+        #scatter-chart {
+            width: 100% !important;
+            height: 100% !important;
+            background: #000000 !important;
+        }
+
+        /* Hint Button */
+        .hint-button {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #ff6600;
+            border: 2px solid #ff6600;
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 8px 12px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.2s;
+            z-index: 10;
+        }
+
+        .hint-button:hover {
+            background: #ff6600;
+            color: #000;
+        }
+
+        .hint-button:disabled {
+            color: #666;
+            border-color: #666;
+            cursor: not-allowed;
+        }
+
+        .hint-button:disabled:hover {
+            background: rgba(0, 0, 0, 0.8);
+            color: #666;
+        }
+
+        /* Right Sidebar */
+        .sidebar {
+            grid-column: 2;
+            grid-row: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Input Section */
+        .input-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            text-align: center;
+        }
+
+        .input-display {
+            font-size: 48px;
+            font-weight: 700;
+            color: #ffaa00;
+            background: #000;
+            border: 2px solid #ff6600;
+            padding: 20px;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .terminal-input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #ffaa00;
+            font-family: inherit;
+            font-size: 48px;
+            font-weight: 700;
+            text-align: center;
+            width: 100%;
+        }
+
+        .terminal-button {
+            background: rgba(0, 0, 0, 0.8);
+            color: #ff6600;
+            border: 2px solid #ff6600;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 700;
+            padding: 12px 24px;
+            cursor: pointer;
+            text-transform: uppercase;
+            width: 100%;
+            transition: all 0.2s;
+        }
+
+        .terminal-button:hover {
+            background: #ff6600;
+            color: #000;
+        }
+
+        .terminal-button:disabled {
+            color: #666;
+            border-color: #666;
+            cursor: not-allowed;
+        }
+
+        .terminal-button:disabled:hover {
+            background: rgba(0, 0, 0, 0.8);
+            color: #666;
+        }
+
+        /* Statistics Section */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #333;
+        }
+
+        .stat-label {
+            color: #999;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            color: #ffaa00;
+            font-weight: 700;
+        }
+
+        /* Lives Section */
+        .lives-display {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .life-icon {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background: #00ff00;
+            margin: 0 2px;
+            clip-path: polygon(50% 0%, 0% 50%, 50% 100%, 100% 50%);
+        }
+
+        .life-icon.dead {
+            background: #333;
+        }
+
+        /* Footer */
+        .terminal-footer {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            padding: 10px 0;
+        }
+
+        /* Feedback */
+        .feedback {
+            color: #ff6600;
+            min-height: 40px;
+            padding: 10px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #333;
+            margin: 8px 0;
+        }
+
+        .feedback.excellent { color: #00ff00; }
+        .feedback.good { color: #00ff00; }
+        .feedback.okay { color: #ffff00; }
+        .feedback.poor { color: #ff8800; }
+        .feedback.terrible { color: #ff0000; }
+        .feedback.error { color: #ff0000; }
+        .feedback.game-over { color: #ff0000; font-weight: 700; }
+
+        /* Instructions */
+        .instructions {
+            margin-top: 10px;
+        }
+
+        .instructions ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .instructions li {
+            margin: 8px 0;
+            padding-left: 15px;
+            position: relative;
+            color: #ccc;
+        }
+
+        .instructions li::before {
+            content: "•";
+            color: #ff6600;
+            position: absolute;
+            left: 0;
+        }
+
+        /* Terminal Output Styling */
+        .terminal-output {
+            color: #90ee90;
+            font-family: monospace;
+            padding: 10px;
+            margin: 8px 0 0 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .terminal-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto auto;
+            }
+            
+            .chart-section {
+                grid-column: 1;
+                grid-row: 2;
+            }
+            
+            .sidebar {
+                grid-column: 1;
+                grid-row: 3;
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            
+            .sidebar > * {
+                flex: 1;
+                min-width: 250px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 32px;
+            }
+            
+            .input-display {
+                font-size: 32px;
+                min-height: 80px;
+            }
+            
+            .terminal-input {
+                font-size: 32px;
+            }
+            
+            .sidebar {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="version">v1.0</div>
+    
+    <div class="terminal-container">
+        <!-- Header -->
+        <div class="terminal-header">
+            <div class="main-title">GUESS THE BETA</div>
+            <div class="sub-title">TEST YOUR FINANCIAL INTUITION</div>
+            <div class="sub-title">ESTIMATE BETA FROM RETURN SCATTER</div>
+        </div>
+
+        <!-- Main Chart Section -->
+        <div class="terminal-section chart-section">
+    <div class="section-title">Return Series // Market vs Asset</div>
+    <div class="chart-container">
+        <canvas id="scatter-chart"></canvas>
+    </div>
+    <div id="feedback" class="feedback">System ready. Awaiting input...</div>
+    <div style="text-align: right; margin-top: -8px; margin-bottom: 10px;">
+        <button id="hint-button" class="hint-button">Hint</button>
+    </div>
+    <pre class="terminal-output">
+SCORING RULES:
+Guess within:
+- 0.15 → +10 pts, +1 life
+- 0.3  → +5 pts
+- 0.45 → +2 pts
+- 0.6  → 0 pts
+- >0.6 → -1 life
+</pre>
+        </div>
+
+        <!-- Right Sidebar -->
+        <div class="sidebar">
+            <!-- Beta Input -->
+            <div class="terminal-section">
+                <div class="section-title">Beta Estimator (Guess)</div>
+                <div class="input-section">
+                    <div class="input-display">
+                        <input 
+                            type="number" 
+                            id="beta-guess" 
+                            class="terminal-input"
+                            placeholder="0.0"
+                            step="0.01"
+                            min="-3"
+                            max="3"
+                            autocomplete="off"
+                        >
+                    </div>
+                    <button id="submit-guess" class="terminal-button">Submit Estimate<br>[ENTER]</button>
+                    <button id="new-round" class="terminal-button" style="display: none;">New Round</button>
+                    <button id="restart-game" class="terminal-button" style="display: none;">Restart Game</button>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="terminal-section">
+                <div class="section-title">Statistics</div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-label">Score</span>
+                        <span id="score" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Streak</span>
+                        <span id="streak" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">High</span>
+                        <span id="high-score" class="stat-value">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Status -->
+            <div class="terminal-section">
+                <div class="section-title">System Status</div>
+                <div class="stat-item">
+                    <span class="stat-label">Lives</span>
+                </div>
+                <div class="lives-display" id="lives-display">
+                    <div class="life-icon"></div>
+                    <div class="life-icon"></div>
+                    <div class="life-icon"></div>
+                </div>
+            </div>
+
+            <!-- Instructions -->
+            <div class="terminal-section">
+                <div class="section-title">How to Play</div>
+                <div class="instructions">
+                    <ul>
+                        <li>View scatter plot of market vs asset returns</li>
+                        <li>Beta range from -2.0 to 3.0</li>
+                        <li>Get points for accurate guesses</li>
+                        <li>Any positive score continues your streak</li>
+                        <li>Use hint to show regression line</li>
+                        <li>Max 3 lives</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="terminal-footer">
+            <div style="color: #666; font-size: 12px;">Terminal Interface v1.0 - Beta Estimation Game</div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script>
+        // Guess the Beta Game - Interactive Browser Game
+        class GuessBetaGame {
+            constructor() {
+                this.score = 0;
+                this.streak = 0;
+                this.highScore = 0;
+                this.lives = 3;
+                this.maxLives = 3;
+                this.currentBeta = 0;
+                this.marketReturns = [];
+                this.assetReturns = [];
+                this.chart = null;
+                this.hintUsed = false;
+                
+                this.init();
+            }
+            
+            init() {
+                this.setupEventListeners();
+                this.updateUI();
+                this.newRound();
+            }
+            
+            setupEventListeners() {
+                const submitBtn = document.getElementById('submit-guess');
+                const newRoundBtn = document.getElementById('new-round');
+                const restartBtn = document.getElementById('restart-game');
+                const hintBtn = document.getElementById('hint-button');
+                const guessInput = document.getElementById('beta-guess');
+                
+                submitBtn?.addEventListener('click', () => this.submitGuess());
+                newRoundBtn?.addEventListener('click', () => this.newRound());
+                restartBtn?.addEventListener('click', () => this.reset());
+                hintBtn?.addEventListener('click', () => this.showHint());
+                guessInput?.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') this.submitGuess();
+                });
+            }
+            
+            // Generate synthetic daily returns with specified beta
+            generateReturns(beta, numDays = 50) {
+                const returns = { market: [], asset: [] };
+                
+                for (let i = 0; i < numDays; i++) {
+                    // Generate market return (normal distribution approximation)
+                    const marketReturn = this.normalRandom() * 0.02; // ~2% daily volatility
+                    
+                    // Generate asset return with beta relationship + idiosyncratic risk
+                    const idiosyncraticRisk = this.normalRandom() * 0.015; // ~1.5% idiosyncratic volatility
+                    const assetReturn = beta * marketReturn + idiosyncraticRisk;
+                    
+                    returns.market.push(marketReturn);
+                    returns.asset.push(assetReturn);
+                }
+                
+                return returns;
+            }
+            
+            // Box-Muller transform for normal distribution
+            normalRandom() {
+                let u = 0, v = 0;
+                while (u === 0) u = Math.random(); // Converting [0,1) to (0,1)
+                while (v === 0) v = Math.random();
+                return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+            }
+            
+            // Calculate actual beta from returns using linear regression
+            calculateBeta(marketReturns, assetReturns) {
+                const n = marketReturns.length;
+                const sumX = marketReturns.reduce((a, b) => a + b, 0);
+                const sumY = assetReturns.reduce((a, b) => a + b, 0);
+                const sumXY = marketReturns.reduce((sum, x, i) => sum + x * assetReturns[i], 0);
+                const sumXX = marketReturns.reduce((sum, x) => sum + x * x, 0);
+                
+                const beta = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+                return beta;
+            }
+            
+            // Calculate alpha (intercept) for regression line
+            calculateAlpha(marketReturns, assetReturns, beta) {
+                const meanMarket = marketReturns.reduce((a, b) => a + b, 0) / marketReturns.length;
+                const meanAsset = assetReturns.reduce((a, b) => a + b, 0) / assetReturns.length;
+                return meanAsset - beta * meanMarket;
+            }
+            
+            // Create scatter plot using Chart.js
+            createChart() {
+                const ctx = document.getElementById('scatter-chart');
+                if (!ctx) return;
+                
+                // Destroy existing chart
+                if (this.chart) {
+                    this.chart.destroy();
+                }
+                
+                const data = this.marketReturns.map((market, i) => ({
+                    x: market * 100, // Convert to percentage
+                    y: this.assetReturns[i] * 100
+                }));
+                
+                this.chart = new Chart(ctx, {
+                    type: 'scatter',
+                    data: {
+                        datasets: [{
+                            label: 'Asset vs Market Returns',
+                            data: data,
+                            backgroundColor: 'red',
+                            borderColor: 'red',
+                            borderWidth: 1,
+                            pointRadius: 3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Market Return (%)',
+                                    color: '#ff6600'
+                                },
+                                grid: {
+                                    color: '#333'
+                                },
+                                ticks: {
+                                    color: '#ff6600'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Asset Return (%)',
+                                    color: '#ff6600'
+                                },
+                                grid: {
+                                    color: '#333'
+                                },
+                                ticks: {
+                                    color: '#ff6600'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                backgroundColor: '#000',
+                                titleColor: '#ff6600',
+                                bodyColor: '#ff6600',
+                                borderColor: '#ff6600',
+                                borderWidth: 1,
+                                callbacks: {
+                                    label: function(context) {
+                                        return `Market: ${context.parsed.x.toFixed(2)}%, Asset: ${context.parsed.y.toFixed(2)}%`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Show hint by adding regression line to chart
+            showHint() {
+                if (this.hintUsed || !this.chart) return;
+                
+                const beta = this.calculateBeta(this.marketReturns, this.assetReturns);
+                const alpha = this.calculateAlpha(this.marketReturns, this.assetReturns, beta);
+                
+                // Find min and max market returns for line endpoints
+                const minMarket = Math.min(...this.marketReturns) * 100;
+                const maxMarket = Math.max(...this.marketReturns) * 100;
+                
+                // Calculate corresponding y values for regression line
+                const y1 = (alpha + beta * (minMarket / 100)) * 100;
+                const y2 = (alpha + beta * (maxMarket / 100)) * 100;
+                
+                // Add regression line dataset
+                this.chart.data.datasets.push({
+                    label: 'Regression Line',
+                    data: [{x: minMarket, y: y1}, {x: maxMarket, y: y2}],
+                    backgroundColor: '#00ff00',
+                    borderColor: '#00ff00',
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    showLine: true,
+                    fill: false,
+                    type: 'line'
+                });
+                
+                this.chart.update();
+                
+                // Disable hint button
+                this.hintUsed = true;
+                const hintBtn = document.getElementById('hint-button');
+                if (hintBtn) {
+                    hintBtn.disabled = true;
+                    hintBtn.textContent = 'Hint Used';
+                }
+            }
+            
+            // Start a new round
+            newRound() {
+                // Generate random beta between -2 and 3
+                this.currentBeta = Math.random() * 5 - 2; // Range: -2 to 3
+                
+                // Generate returns
+                const returns = this.generateReturns(this.currentBeta);
+                this.marketReturns = returns.market;
+                this.assetReturns = returns.asset;
+                
+                // Reset hint
+                this.hintUsed = false;
+                const hintBtn = document.getElementById('hint-button');
+                if (hintBtn) {
+                    hintBtn.disabled = false;
+                    hintBtn.textContent = 'Hint';
+                }
+                
+                // Create chart
+                this.createChart();
+                
+                // Reset UI
+                const guessInput = document.getElementById('beta-guess');
+                const feedback = document.getElementById('feedback');
+                const submitBtn = document.getElementById('submit-guess');
+                const newRoundBtn = document.getElementById('new-round');
+                const restartBtn = document.getElementById('restart-game');
+                
+                if (guessInput) guessInput.value = '';
+                if (feedback) feedback.textContent = 'System ready. Awaiting input...';
+                if (feedback) feedback.className = 'feedback';
+                if (submitBtn) submitBtn.disabled = false;
+                if (newRoundBtn) newRoundBtn.style.display = 'none';
+                if (restartBtn) restartBtn.style.display = 'none';
+                
+                // Focus on input
+                if (guessInput) guessInput.focus();
+            }
+            
+            // Submit user's beta guess
+            submitGuess() {
+                const guessInput = document.getElementById('beta-guess');
+                const feedback = document.getElementById('feedback');
+                const submitBtn = document.getElementById('submit-guess');
+                const newRoundBtn = document.getElementById('new-round');
+                
+                if (!guessInput || !feedback) return;
+                
+                const userGuess = parseFloat(guessInput.value);
+                
+                // Validate input
+                if (isNaN(userGuess)) {
+                    feedback.textContent = 'Please enter a valid number!';
+                    feedback.className = 'feedback error';
+                    return;
+                }
+                
+                // Calculate actual beta from the generated data
+                const actualBeta = this.calculateBeta(this.marketReturns, this.assetReturns);
+                const difference = Math.abs(userGuess - actualBeta);
+                
+                // Calculate score and update lives
+                let points = 0;
+                let message = '';
+                let feedbackClass = 'feedback';
+                
+                if (difference <= 0.15) {
+                    points = 10;
+                    this.lives = Math.min(this.lives + 1, this.maxLives); // Add life, max 3
+                    message = '🎯 Perfect! ';
+                    feedbackClass += ' excellent';
+                    this.streak++;
+                } else if (difference <= 0.3) {
+                    points = 5;
+                    message = '👍 Great! ';
+                    feedbackClass += ' good';
+                    this.streak++;
+                } else if (difference <= 0.45) {
+                    points = 2;
+                    message = '👌 Good! ';
+                    feedbackClass += ' okay';
+                    this.streak++;
+                } else if (difference <= 0.6) {
+                    points = 0;
+                    message = '😐 Close, but no points. ';
+                    feedbackClass += ' poor';
+                    this.streak = 0;
+                } else {
+                    points = 0;
+                    this.lives--;
+                    message = '💥 Too far off! Lost a life. ';
+                    feedbackClass += ' terrible';
+                    this.streak = 0;
+                }
+                
+                this.score += points;
+                if (this.score > this.highScore) {
+                    this.highScore = this.score;
+                }
+                
+                // Update feedback
+                message += `Your guess: ${userGuess.toFixed(2)}, Actual: ${actualBeta.toFixed(2)}`;
+                message += ` (±${difference.toFixed(2)})`;
+                message += points > 0 ? ` +${points} points!` : '';
+                
+                feedback.textContent = message;
+                feedback.className = feedbackClass;
+                
+                // Update UI
+                this.updateUI();
+                
+                // Disable submit, show new round button
+                if (submitBtn) submitBtn.disabled = true;
+                if (newRoundBtn) newRoundBtn.style.display = 'inline-block';
+                
+                // Check game over
+                if (this.lives <= 0) {
+                    this.gameOver();
+                }
+            }
+            
+            // Update UI elements
+            updateUI() {
+                const scoreEl = document.getElementById('score');
+                const streakEl = document.getElementById('streak');
+                const highScoreEl = document.getElementById('high-score');
+                const livesDisplay = document.getElementById('lives-display');
+                
+                if (scoreEl) scoreEl.textContent = this.score;
+                if (streakEl) streakEl.textContent = this.streak;
+                if (highScoreEl) highScoreEl.textContent = this.highScore;
+                
+                if (livesDisplay) {
+                    livesDisplay.innerHTML = '';
+                    for (let i = 0; i < this.maxLives; i++) {
+                        const lifeIcon = document.createElement('div');
+                        lifeIcon.className = `life-icon${i >= this.lives ? ' dead' : ''}`;
+                        livesDisplay.appendChild(lifeIcon);
+                    }
+                }
+            }
+            
+            // Handle game over
+            gameOver() {
+                const feedback = document.getElementById('feedback');
+                const submitBtn = document.getElementById('submit-guess');
+                const newRoundBtn = document.getElementById('new-round');
+                const restartBtn = document.getElementById('restart-game');
+                const guessInput = document.getElementById('beta-guess');
+                const hintBtn = document.getElementById('hint-button');
+                
+                if (feedback) {
+                    feedback.textContent = `💀 Game Over! Final Score: ${this.score} points. Click restart to play again.`;
+                    feedback.className = 'feedback game-over';
+                }
+                
+                // Disable game controls, show restart button
+                if (submitBtn) submitBtn.disabled = true;
+                if (newRoundBtn) newRoundBtn.style.display = 'none';
+                if (restartBtn) restartBtn.style.display = 'inline-block';
+                if (guessInput) guessInput.disabled = true;
+                if (hintBtn) hintBtn.disabled = true;
+            }
+            
+            // Reset game
+            reset() {
+                this.score = 0;
+                this.streak = 0;
+                this.lives = 3;
+                this.hintUsed = false;
+                
+                const guessInput = document.getElementById('beta-guess');
+                const hintBtn = document.getElementById('hint-button');
+                
+                if (guessInput) guessInput.disabled = false;
+                if (hintBtn) {
+                    hintBtn.disabled = false;
+                    hintBtn.textContent = 'Hint';
+                }
+                
+                this.updateUI();
+                this.newRound();
+            }
+        }
+
+        // Initialize game when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if Chart.js is loaded
+            if (typeof Chart === 'undefined') {
+                console.error('Chart.js is not loaded! Please include Chart.js before this script.');
+                const feedback = document.getElementById('feedback');
+                if (feedback) {
+                    feedback.textContent = 'Error: Chart.js library not found. Please include Chart.js in your HTML.';
+                    feedback.className = 'feedback error';
+                }
+                return;
+            }
+            
+            // Initialize the game
+            window.guessBetaGame = new GuessBetaGame();
+        });
+    </script>
+</body>
+</html>
